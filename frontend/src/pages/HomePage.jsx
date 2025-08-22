@@ -39,10 +39,14 @@ const HomePage = () => {
   });
 
   useEffect(() => {
+    console.log("Outgoing friend requests:", outgoingFriendReqs);
     const outgoingIds = new Set();
     if (outgoingFriendReqs && outgoingFriendReqs.length > 0) {
       outgoingFriendReqs.forEach((req) => {
+        if (req.recipient && req.recipient._id) {
+        console.log("Req recipient:", req.recipient);
         outgoingIds.add(req.recipient._id);
+        }
       });
       setOutgoingRequestsIds(outgoingIds);
     }

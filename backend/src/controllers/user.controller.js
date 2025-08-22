@@ -139,8 +139,8 @@ export async function getOutgoingFriendReqs(req, res) {
       sender: req.user.id,
       status: "pending",
     }).populate("recipient", "fullName profilePic nativeLanguage learningLanguage");
-
-    res.status(200).json(outgoingRequests);
+    const validRequests = outgoingRequests.filter(req => req.recipient !== null);
+    res.status(200).json(validRequests);
   } catch (error) {
     console.log("Error in getOutgoingFriendReqs controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
