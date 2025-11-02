@@ -64,6 +64,8 @@ jobs:
       # 4️⃣ Build frontend
       - name: Build frontend
         run: npm run build --prefix frontend
+        env: 
+          VITE_STREAM_API_KEY: ${{ secrets.VITE_STREAM_API_KEY }}
 
       # 5️⃣ Install backend dependencies
       - name: Install backend dependencies
