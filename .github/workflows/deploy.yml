@@ -1,34 +1,74 @@
-name: Deploy Streamify to Render
+# name: Deploy Streamify to Render
+
+# on:
+#   push:
+#     branches:
+#       - main  # deploys when you push to main
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # 1️⃣ Checkout your code
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       # 2️⃣ Setup Node 24
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '24'
+
+#       # 3️⃣ Install dependencies & build project
+#       - name: Build backend + frontend
+#         run: npm run build
+
+#       # 4️⃣ Deploy to Render
+#       - name: Deploy to Render
+#         env:
+#           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+#           RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+#         run: |
+#           curl -X POST "https://api.render.com/deploy/srv-${RENDER_SERVICE_ID}" \
+#           -H "Authorization: Bearer $RENDER_API_KEY"
+
+
+
+name: Deploy Marmalade to Azure App Service
 
 on:
   push:
     branches:
-      - main  # deploys when you push to main
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout your code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node 24
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '24'
+          node-version: '18'
 
-      # 3️⃣ Install dependencies & build project
-      - name: Build backend + frontend
-        run: npm run build
+      - name: Build frontend
+        run: npm run build --prefix frontend
 
-      # 4️⃣ Deploy to Render
-      - name: Deploy to Render
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+      - name: Install backend dependencies
+        run: npm install --prefix backend
+
+      - name: Zip backend for deployment
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-${RENDER_SERVICE_ID}" \
-          -H "Authorization: Bearer $RENDER_API_KEY"
+          cd backend
+          zip -r ../marmalade.zip .
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: marmalade   # your web app name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: marmalade.zip
