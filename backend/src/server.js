@@ -17,8 +17,11 @@ const __dirname = path.resolve();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true, // allow frontend to send cookies
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://marmalade.azurewebsites.net" // your actual deployed URL
+        : "http://localhost:5173",
+    credentials: true,
   })
 );
 
@@ -30,7 +33,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.use(express.static(path.join(__dirname, "frontend", "dist")));
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
