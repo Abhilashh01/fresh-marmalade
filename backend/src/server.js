@@ -19,7 +19,7 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? "https://marmalade.marmalade-dpc0h5bpcbdta2fs.centralindia-01.azurewebsites.net.net" // your actual deployed URL
+        ? "https://marmalade-dpc0h5bpcbdta2fs.centralindia-01.azurewebsites.net" // your actual deployed URL
         : "http://localhost:5173",
     credentials: true,
   })
