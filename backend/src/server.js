@@ -15,12 +15,26 @@ const PORT = process.env.PORT;
 
 const __dirname = path.resolve();
 
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? [
+        process.env.CONTAINER_CLIENT_URL,
+        process.env.APPSERVICE_CLIENT_URL,
+        process.env.DEV_CLIENT_URL,
+      ]
+    : [process.env.DEV_CLIENT_URL];
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "https://marmalade.marmalade-dpc0h5bpcbdta2fs.centralindia-01.azurewebsites.net.net" // your actual deployed URL
-        : "http://localhost:5173",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -41,7 +55,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
   connectDB();
 });
